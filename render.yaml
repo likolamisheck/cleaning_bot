@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: sweeping-bot
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: python sweeping_bot.py
+    envVars:
+      - key: BOT_TOKEN
+        value: 7967256524:AAF48mFN3UjOiWaKD-crtkRvc5oBHvF1LN4
