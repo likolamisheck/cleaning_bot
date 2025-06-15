@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 
-# Your list of people on the rota
+# Rota list
 rota = [
     "Likola Misheck",
     "Kasakula George",
@@ -14,25 +14,62 @@ rota = [
     "Temba Leadway"
 ]
 
-# Weekly rotation logic
+# Weekly rotation based on start date
 def get_person_on_duty():
     today = datetime.date.today()
-    index = (today.toordinal() // 7) % len(rota)
+    start_date = datetime.date(2024, 1, 1)
+    delta_weeks = (today - start_date).days // 7
+    index = delta_weeks % len(rota)
     return rota[index]
 
-# Home route
+# Home page
 @app.route('/')
 def home():
     person = get_person_on_duty()
     return render_template_string("""
-        <h1>Weekly Duty Rota</h1>
-        <p><strong>{{ person }}</strong> is on duty this week.</p>
+        <html>
+        <head>
+            <title>Weekly Duty Rota</title>
+            <style>
+                body {
+                    background-color: #f2f2f2;
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }
+                .canvas {
+                    background-color: white;
+                    padding: 40px;
+                    border-radius: 15px;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                    text-align: center;
+                }
+                h1 {
+                    color: #333;
+                    margin-bottom: 20px;
+                }
+                p {
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #007BFF;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="canvas">
+                <h1>Weekly Duty Rota</h1>
+                <p>The person on duty is: {{ person }}</p>
+            </div>
+        </body>
+        </html>
     """, person=person)
 
 # QR code route
 @app.route('/qrcode')
 def generate_qrcode():
-    # Get the server URL from environment variable (useful after deployment)
     link = os.getenv("SERVER_URL", "http://127.0.0.1:5000/")
     qr = qrcode.make(link)
     img_io = io.BytesIO()
@@ -40,7 +77,7 @@ def generate_qrcode():
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
-# Running locally
+# Start server
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
