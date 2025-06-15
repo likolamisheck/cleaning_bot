@@ -1,1 +1,1 @@
-web: gunicorn sweepingbot.wsgi
+web: gunicorn sweepingrota:app
