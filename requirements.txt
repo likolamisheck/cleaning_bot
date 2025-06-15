@@ -1,1 +1,4 @@
-pyTelegramBotAPI
+Flask
+qrcode[pil]
+gunicorn
+
