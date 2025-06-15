@@ -14,11 +14,11 @@ rota = [
     "Temba Leadway"
 ]
 
-# Weekly rotation based on start date
+# Weekly rotation based on start date (starting every Sunday)
 def get_person_on_duty():
     today = datetime.date.today()
-    start_date = datetime.date(2024, 1, 1)
-    delta_weeks = (today - start_date).days // 7
+    start_date = datetime.date(2024, 6, 16)  # starting anchor Sunday
+    delta_weeks = ((today - start_date).days) // 7
     index = delta_weeks % len(rota)
     return rota[index]
 
@@ -32,8 +32,8 @@ def home():
             <title>Weekly Duty Rota</title>
             <style>
                 body {
-                    background-color: #f2f2f2;
-                    font-family: Arial, sans-serif;
+                    background: linear-gradient(to right, #4facfe, #00f2fe);
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -41,18 +41,19 @@ def home():
                     margin: 0;
                 }
                 .canvas {
-                    background-color: white;
-                    padding: 40px;
-                    border-radius: 15px;
-                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                    background-color: rgba(255, 255, 255, 0.95);
+                    padding: 50px;
+                    border-radius: 20px;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
                     text-align: center;
                 }
                 h1 {
-                    color: #333;
-                    margin-bottom: 20px;
+                    color: #222;
+                    margin-bottom: 30px;
+                    font-size: 36px;
                 }
                 p {
-                    font-size: 24px;
+                    font-size: 28px;
                     font-weight: bold;
                     color: #007BFF;
                 }
