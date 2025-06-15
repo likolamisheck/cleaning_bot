@@ -1,7 +1,6 @@
 services:
   - type: web
-    name: duty-rota
+    name: cleaning-bot
     env: python
     buildCommand: ""
-    startCommand: gunicorn app:app
-
+    startCommand: gunicorn sweepingrota:app

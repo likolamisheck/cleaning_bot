@@ -1,4 +1,4 @@
-from flask import Flask, render_template_string, send_file
+from flask import Flask, render_template_string, send_file, request
 import qrcode
 import datetime
 import io
@@ -23,9 +23,14 @@ def get_person_on_duty():
     return rota[index]
 
 # Home page
-@app.route('/')
+@app.route('/', methods=['GET', 'HEAD'])
 def home():
     person = get_person_on_duty()
+    
+    # Handle HEAD request for uptime robot
+    if request.method == 'HEAD':
+        return '', 200
+
     return render_template_string("""
         <html>
         <head>
@@ -78,7 +83,7 @@ def generate_qrcode():
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
-# Start server
+# Start server (for local testing)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
