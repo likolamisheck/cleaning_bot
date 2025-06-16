@@ -26,51 +26,50 @@ def get_person_on_duty():
 @app.route('/', methods=['GET', 'HEAD'])
 def home():
     person = get_person_on_duty()
-    
-    # Handle HEAD request for uptime robot
+
     if request.method == 'HEAD':
         return '', 200
 
     return render_template_string("""
-        <html>
-        <head>
-            <title>Weekly Duty Rota</title>
-            <style>
-                body {
-                    background: linear-gradient(to right, #4facfe, #00f2fe);
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    margin: 0;
-                }
-                .canvas {
-                    background-color: rgba(255, 255, 255, 0.95);
-                    padding: 50px;
-                    border-radius: 20px;
-                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-                    text-align: center;
-                }
-                h1 {
-                    color: #222;
-                    margin-bottom: 30px;
-                    font-size: 36px;
-                }
-                p {
-                    font-size: 28px;
-                    font-weight: bold;
-                    color: #007BFF;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="canvas">
-                <h1>Weekly Duty Rota</h1>
-                <p>The person on duty is: {{ person }}</p>
-            </div>
-        </body>
-        </html>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Weekly Duty Rota</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                background: linear-gradient(to right, #4facfe, #00f2fe);
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .card {
+                padding: 40px;
+                border-radius: 20px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+            .card-title {
+                font-size: 2rem;
+                font-weight: bold;
+            }
+            .person-name {
+                font-size: 1.8rem;
+                color: #007BFF;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card text-center">
+            <h1 class="card-title">Weekly Duty Rota</h1>
+            <p class="person-name">The person on duty is:<br> {{ person }}</p>
+        </div>
+    </body>
+    </html>
     """, person=person)
 
 # QR code route
@@ -87,3 +86,4 @@ def generate_qrcode():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
