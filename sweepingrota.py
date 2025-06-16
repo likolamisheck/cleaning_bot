@@ -6,7 +6,6 @@ import os
 
 app = Flask(__name__)
 
-# Rota list
 rota = [
     "Likola Misheck",
     "Kasakula George",
@@ -14,18 +13,22 @@ rota = [
     "Temba Leadway"
 ]
 
-# Weekly rotation based on start date (starting every Sunday)
 def get_person_on_duty():
     today = datetime.date.today()
-    start_date = datetime.date(2024, 6, 16)  # starting anchor Sunday
+    start_date = datetime.date(2024, 6, 16)  # first Sunday
     delta_weeks = ((today - start_date).days) // 7
     index = delta_weeks % len(rota)
     return rota[index]
 
-# Home page
+def get_days_until_next_sunday():
+    today = datetime.date.today()
+    days_until_sunday = (6 - today.weekday()) % 7  # Sunday = 6
+    return days_until_sunday if days_until_sunday != 0 else 7  # always show 7 if today is Sunday
+
 @app.route('/', methods=['GET', 'HEAD'])
 def home():
     person = get_person_on_duty()
+    days_left = get_days_until_next_sunday()
 
     if request.method == 'HEAD':
         return '', 200
@@ -51,6 +54,9 @@ def home():
                 padding: 40px;
                 border-radius: 20px;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                background-color: white;
+                text-align: center;
+                animation: fadeIn 1.5s ease;
             }
             .card-title {
                 font-size: 2rem;
@@ -60,19 +66,65 @@ def home():
                 font-size: 1.8rem;
                 color: #007BFF;
                 margin-top: 20px;
+                animation: slideIn 1.2s ease forwards;
+                opacity: 0;
+            }
+            .countdown {
+                margin-top: 20px;
+                font-size: 1.2rem;
+                color: #333;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateY(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background: linear-gradient(to right, #141e30, #243b55);
+                }
+                .card {
+                    background-color: #1e1e1e;
+                    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+                }
+                .card-title {
+                    color: #ffffff;
+                }
+                .person-name {
+                    color: #4fa3ff;
+                }
+                .countdown {
+                    color: #ccc;
+                }
             }
         </style>
     </head>
     <body>
-        <div class="card text-center">
+        <div class="card">
             <h1 class="card-title">Weekly Duty Rota</h1>
-            <p class="person-name">The person on duty is:<br> {{ person }}</p>
+            <p class="person-name">The person on duty is:<br><strong>{{ person }}</strong></p>
+            <div class="countdown">{{ days_left }} day{{ 's' if days_left != 1 else '' }} left until next rotation</div>
         </div>
     </body>
     </html>
-    """, person=person)
+    """, person=person, days_left=days_left)
 
-# QR code route
 @app.route('/qrcode')
 def generate_qrcode():
     link = os.getenv("SERVER_URL", "http://127.0.0.1:5000/")
@@ -82,8 +134,6 @@ def generate_qrcode():
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
-# Start server (for local testing)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
