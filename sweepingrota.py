@@ -6,6 +6,7 @@ import os
 
 app = Flask(__name__)
 
+# Your rota list
 rota = [
     "Likola Misheck",
     "Kasakula George",
@@ -13,6 +14,7 @@ rota = [
     "Temba Leadway"
 ]
 
+# Get current and next person on duty
 def get_person_on_duty(week_offset=0):
     today = datetime.date.today()
     start_date = datetime.date(2024, 6, 16)  # starting anchor Sunday
@@ -20,11 +22,13 @@ def get_person_on_duty(week_offset=0):
     index = delta_weeks % len(rota)
     return rota[index]
 
+# Get days left until Sunday
 def get_days_until_next_sunday():
     today = datetime.date.today()
     days_until_sunday = (6 - today.weekday()) % 7
     return days_until_sunday if days_until_sunday != 0 else 7
 
+# Home route
 @app.route('/', methods=['GET', 'HEAD'])
 def home():
     person = get_person_on_duty()
@@ -86,30 +90,21 @@ def home():
                 font-size: 1.2rem;
                 color: #333;
             }
-
             @keyframes slideIn {
                 from { transform: translateY(20px); opacity: 0; }
                 to { transform: translateY(0); opacity: 1; }
             }
-
             @keyframes fadeIn {
                 from { opacity: 0; }
                 to { opacity: 1; }
             }
-
             @keyframes popIn {
                 from { transform: scale(0); opacity: 0; }
                 to { transform: scale(1); opacity: 1; }
             }
-
             @media (prefers-color-scheme: dark) {
-                body {
-                    background: linear-gradient(to right, #141e30, #243b55);
-                }
-                .card {
-                    background-color: #1e1e1e;
-                    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
-                }
+                body { background: linear-gradient(to right, #141e30, #243b55); }
+                .card { background-color: #1e1e1e; box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1); }
                 .card-title { color: #ffffff; }
                 .person-name { color: #4fa3ff; }
                 .next-person { color: #aaa; }
@@ -129,6 +124,7 @@ def home():
     </html>
     """, person=person, next_person=next_person, days_left=days_left)
 
+# QR code generator route
 @app.route('/qrcode')
 def generate_qrcode():
     link = os.getenv("SERVER_URL", "http://127.0.0.1:5000/")
@@ -138,6 +134,7 @@ def generate_qrcode():
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
+# Run local server
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
